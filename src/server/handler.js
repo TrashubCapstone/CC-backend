@@ -3,9 +3,7 @@ const createData = require('../services/createData');
 const updateData = require('../services/updateData');
 const deleteData = require('../services/deleteData');
 const { nanoid } = require('nanoid');
-const ClientError = require('../exceptions/ClientError');
 const UnauthorizedError = require('../exceptions/UnauthorizedError');
-// const Joi = require('joi');
 const { registerUser, loginUser, logoutUser, verifyToken } = require('../auth/auth');
 
 async function getAllSampahHandler(request, h) {
