@@ -1,9 +1,10 @@
 const getData = require('../services/getData');
 const createData = require('../services/createData');
-const updateData = require('../services/updateData');
 const deleteData = require('../services/deleteData');
+const updateData = require('../services/updateData');
 const { nanoid } = require('nanoid');
 const UnauthorizedError = require('../exceptions/UnauthorizedError');
+// const upload = require('../middleware/upload');
 const { registerUser, loginUser, logoutUser, verifyToken } = require('../auth/auth');
 
 async function getAllSampahHandler(request, h) {
@@ -20,18 +21,25 @@ async function createSampahHandler(request, h) {
   const id = nanoid(16);
   const createdAt = new Date().toISOString();
   const data = { id, nama_sampah, jenis_sampah, kategori_sampah, keterangan_sampah, createdAt };
-  await createData(id, data);
+  const file = request.payload.image;
+
+  await createData(id, data, file);
   return h.response({ status: 'success', data }).code(201);
 }
 
 async function updateDataHandler(request, h) {
+  const { nama_sampah, jenis_sampah, kategori_sampah, keterangan_sampah } = request.payload;
+  const data = { nama_sampah, jenis_sampah, kategori_sampah, keterangan_sampah };
+  const file = request.payload.image;
+
   try {
-    const result = await updateData(request.params.id, request.payload);
-    return h.response(result).code(200);
+      const updatedData = await updateData(request.params.id, data, file);
+      return h.response({ status: 'success', updatedData}).code(200);
   } catch (error) {
-    return h.response({ error: error.message }).code(400);
+      return h.response({ error: error.message }).code(400);
   }
 }
+
 
 async function deleteSampahHandler(request, h) {
   const { id } = request.params;
@@ -89,11 +97,11 @@ const validateToken = async (request, h) => {
 
 const validatePayload = (schema) => {
   return async (request, h) => {
-      const { error } = schema.validate(request.payload);
-      if (error) {
-          throw new InputError(error.details[0].message);
-      }
-      return h.continue;
+    const { error } = schema.validate(request.payload);
+    if (error) {
+      throw new InputError(error.details[0].message);
+    }
+    return h.continue;
   };
 };
 

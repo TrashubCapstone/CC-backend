@@ -1,5 +1,5 @@
 const Hapi = require('@hapi/hapi');
-const routes = require('../server/routes');
+const routes = require('./routes');
 const InputError = require('../exceptions/InputError');
 const ClientError = require('../exceptions/ClientError');
 const UnauthorizedError = require('../exceptions/UnauthorizedError');
@@ -7,11 +7,17 @@ require('dotenv').config();
 
 const init = async () => {
   const server = Hapi.server({
-    port: process.env.PORT || 3000,
-    host: "localhost",
+    port: process.env.PORT || 3030,
+    host: '0.0.0.0',
     routes: {
       cors: {
         origin: ['*'],
+      },
+      payload: {
+        maxBytes: 10485760, // 10 MB limit
+        multipart: true,
+        output: 'stream',
+        parse: true,
       },
     },
   });
@@ -31,6 +37,8 @@ const init = async () => {
         message: response.message,
       }).code(response.statusCode);
     } else if (response.isBoom) {
+      console.error('Boom Error:', response.output.payload); // Enhanced error logging
+      console.error(response); // Log the error
       return h.response({
         status: 'error',
         message: 'Internal Server Error',
@@ -44,7 +52,7 @@ const init = async () => {
 };
 
 process.on('unhandledRejection', (err) => {
-  console.error(err);
+  console.error('Unhandled Rejection:', err); // Enhanced error logging
   process.exit(1);
 });
 

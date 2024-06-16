@@ -1,10 +1,15 @@
 const { Firestore } = require('@google-cloud/firestore');
+const { uploadImage } = require('./storage');
 
-async function createData(id, data) {
-const db = new Firestore();
+async function createData(id, data, file) {
+    const db = new Firestore();
+    const sampahCollection = db.collection('sampah');
 
-const sampahCollection = db.collection('sampah');
-return sampahCollection.doc(id).set(data);
+    if (file) {
+        data.imageUrl = await uploadImage(file);
+    }
+
+    return sampahCollection.doc(id).set(data);
 }
 
 module.exports = createData;

@@ -1,6 +1,6 @@
 {
   "name": "trashub",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "license": "MIT",
   "description": "trashub capstone project",
@@ -12,6 +12,7 @@
   "keywords": [],
   "dependencies": {
     "@google-cloud/firestore": "^7.8.0",
+    "@google-cloud/storage": "^7.11.2",
     "@hapi/hapi": "^21.3.9",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
